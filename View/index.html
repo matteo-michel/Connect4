@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Connect 4</title>
+    <script type="text/javascript" src="./view.js" defer></script>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div id="Title">Connect 4</div>
+<div id="menu">
+    <div class="activeIA">
+        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+        <label for="vehicle1">Active IA</label><br>
+    </div>
+    <div class="playerChoice">
+        <div>
+            <input type="radio" id="huey" name="drone" value="huey" checked>
+            <label for="huey">Player A</label>
+        </div>
+
+        <div>
+            <input type="radio" id="dewey" name="drone" value="dewey">
+            <label for="dewey">Player B</label>
+        </div>
+    </div>
+</div>
+<div id="Game"></div>
+<div id="Win" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Winner : <span id="Winner"></span></p>
+    </div>
+</div>
+</body>
+</html>

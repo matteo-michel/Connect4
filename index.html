@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connect4</title>
+</head>
+<body>
+<div id="buttonToken"></div>
+<canvas id="square"></canvas>
+<script defer>
+    // Init
+    let column, line, radius, space, ini, color, squareX, squareY, connect4, square, ctx, tour, tourEven, tourOdd;
+
+    init();
+
+    function init() {
+        column = 7;
+        line = 6;
+        radius = 30;
+        space = 10;
+        ini = radius + space;
+        color = "blue";
+        tour = 0;
+        tourEven = "red";
+        tourOdd = "yellow";
+
+
+        connect4 = [];
+        for (let i = 0; i < column; i++) {
+            connect4[i] = [];
+            for (let j = 0; j < line; j++) {
+                connect4[i][j] = 0;
+            }
+        }
+
+        squareX = (radius * 2 + space) * column + space;
+        squareY = (radius * 2 + space) * line + space;
+
+        // Square
+        square = document.getElementById("square");
+        square.width = squareX;
+        square.height = squareY;
+
+        // Ctx
+        ctx = square.getContext("2d");
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, square.width, square.height);
+        ctx.globalCompositeOperation = "destination-out";
+        for (let colonne = 0; colonne < column; colonne++) {
+            for (let ligne = 0; ligne < line; ligne++) {
+                ctx.beginPath();
+                ctx.arc(ini + (radius * 2 + space) * colonne, ini + (radius * 2 + space) * ligne, radius, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+
+        let divButton = document.getElementById('buttonToken');
+        for (let i = 0; i < column; i++) {
+            let button = document.createElement("button");
+            button.style.width = radius * 2 + 'px';
+            button.style.height = radius * 2 + 'px';
+            button.style.marginLeft = "10px";
+            button.style.border = "0px";
+            button.idConnect = i;
+            resetButton(button);
+            button.addEventListener('mouseenter', () => {
+                buttonHover(button)
+            });
+            button.addEventListener('mouseleave', () => {
+                resetButton(button)
+            });
+            button.addEventListener('click', () => {
+                drawToken(button.idConnect)
+            });
+            divButton.appendChild(button);
+        }
+    }
+
+    function resetButton(button) {
+        let styleButton = button.style;
+        styleButton.borderRadius = "15px";
+        styleButton.backgroundColor = "grey";
+    }
+
+    function buttonHover(button) {
+        let styleButton = button.style;
+        styleButton.borderRadius = "30px";
+        styleButton.backgroundColor = "red";
+    }
+
+    function drawToken(idButton) {
+        for (let ligne = line - 1; ligne >= 0; ligne--) {
+            if (connect4[idButton][ligne] === 0) {
+                connect4[idButton][ligne] = tour % 2 + 1;
+                ctx.globalCompositeOperation = "source-over";
+                ctx.beginPath();
+                ctx.arc(ini + (radius * 2 + space) * idButton, ini + (radius * 2 + space) * ligne, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = getColor();
+                ctx.fill();
+                console.log(connect4);
+                console.log(checkWin(idButton, ligne));
+                return;
+            }
+        }
+    }
+
+    function getColor() {
+        return (tour++ % 2 === 0) ? tourEven : tourOdd;
+    }
+
+    function checkWin(x, y) {
+        let line = getLine(x, y);
+        let col = getColumn(x, y);
+        let diag = getDiag(x, y);
+    }
+
+    function getLine(x, y) {
+        let compteur = 1;
+        let person = connect4[x][y];
+
+        let xCol = x;
+        while (++xCol < column && connect4[xCol][y] === person) compteur++;
+        while (--x > 0 && connect4[x][y] === person) compteur++;
+
+        if (compteur >= 4) while (++x < column && connect4[x][y] === person) glow(x, y);
+
+        return compteur >= 4;
+    }
+
+    function getColumn(x, y) {
+        let compteur = 1;
+        let person = connect4[x][y];
+
+        let yCol = y;
+        while (++yCol < line && connect4[x][yCol] === person) compteur++;
+        while (--y > 0 && connect4[x][y] === person) compteur++;
+
+        if (compteur >= 4) while (++y < column && connect4[x][y] === person) glow(x, y);
+
+        return compteur >= 4;
+    }
+
+    function getDiag(x, y) {
+        let compteur = 1;
+        let person = connect4[x][y];
+
+        let xDiag = x;
+        let yDiag = y
+        while (++xDiag < column && ++yDiag < line && connect4[xDiag][yDiag] === person) compteur++;
+
+        while (--x < column && --y < line && connect4[x][y] === person) compteur++;
+
+        if (compteur >= 4) while (++x < column && ++y < line && connect4[x][y] === person) glow(x, y);
+
+        return compteur >= 4;
+    }
+
+    function glow(x, y){
+        ctx.beginPath();
+        ctx.arc(ini + (radius * 2 + space) * x, ini + (radius * 2 + space) * y, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = 'green';
+        ctx.fill();
+    }
+</script>
+
+</body>
+</html>
+
+
+

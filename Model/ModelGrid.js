@@ -1,3 +1,6 @@
+import ModelToken from "./ModelToken.js";
+import controllerGrid from "../Controller/ControllerGrid.js";
+
 class ModelGrid {
 
     colorPlayerA;
@@ -14,7 +17,7 @@ class ModelGrid {
     canvas;
     animCanvas;
 
-    anim;
+    isGameStart;
 
     constructor(length, height, token) {
         this.tour = 0;
@@ -27,6 +30,8 @@ class ModelGrid {
 
         this.colonne = length;
         this.ligne = height;
+
+        this.isGameStart = false;
 
         this.grid = [];
         for (let i = 0; i < length; i++) {
@@ -46,8 +51,20 @@ class ModelGrid {
         return (this.tour % 2 === 0) ? this.colorPlayerA : this.colorPlayerB;
     }
 
+    addTour(){
+        this.tour++;
+    }
+
+    getIsGameStart(){
+        return this.isGameStart;
+    }
+
+    getGagnant(){
+        this.isIAPlay = false;
+        return ((this.tour-1)%2===0)? 'Player A' : (this.isIAPlay)? 'IA' : 'PLayer B';
+    }
+
     makeGrid() {
-        // Square
         this.canvas = document.createElement('canvas');
         this.canvas.id = 'mainCanvas';
         this.canvas.width = (this.radius * 2 + this.space) * this.colonne + this.space;
@@ -55,10 +72,9 @@ class ModelGrid {
 
         this.animCanvas = document.createElement('canvas');
         this.animCanvas.id = 'animCanvas';
-        this.animCanvas.width = (this.radius * 2 + this.space) * this.colonne + this.space;
-        this.animCanvas.height = (this.radius * 2 + this.space) * this.ligne + this.space;
+        this.animCanvas.width = this.canvas.width;
+        this.animCanvas.height = this.canvas.height;
 
-        // Ctx
         let ctx = this.canvas.getContext("2d");
         ctx.fillStyle = "blue";
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -71,26 +87,18 @@ class ModelGrid {
             }
         }
 
-        this.canvas.addEventListener('click', (e) => {
-            let rect = e.target.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            controllerGrid.addToken(Math.floor((x - (this.space / 2)) / (this.radius * 2 + this.space)));
-        });
-
-        //Return
-        document.body.appendChild(this.canvas);
-        document.body.appendChild(this.animCanvas);
+        return [this.canvas, this.animCanvas];
     }
 
-    addToken(idCol) {
-        if (ModelToken.isAnim === false) {
-            console.log('addToken');
+    addToken(idCol, preview) {
+        if ((idCol >= 0)&&(idCol < this.colonne)){
+            if (!preview) this.isGameStart = true;
             for (let ligne = this.ligne - 1; ligne >= 0; ligne--) {
                 if (this.grid[idCol][ligne] === 0) {
-                    this.grid[idCol][ligne] = this.tour % 2 + 1;
-                    animToken(idCol, ligne, this.getColorPlayer());
-                    this.tour++;
-                    break;
+                    if (!preview) this.grid[idCol][ligne] = this.tour % 2 + 1;
+                    let colorPlayer = this.getColorPlayer();
+                    if (!preview) this.tour++;
+                    return [idCol, ligne, colorPlayer];
                 }
             }
         }
@@ -99,9 +107,10 @@ class ModelGrid {
     checkWin(x, y) {
         let line = this.getLine(x, y);
         let col = this.getColumn(x, y);
-        let diag = this.getDiag(x, y);
+        let diagR = this.getDiagRight(x, y);
+        let diagL = this.getDiagLeft(x, y);
 
-        return (line || col || diag);
+        return (line || col || diagR || diagL);
     }
 
     getLine(x, y) {
@@ -110,11 +119,15 @@ class ModelGrid {
 
         let xCol = x;
         while (++xCol < this.colonne && this.grid[xCol][y] === person) compteur++;
-        while (--x > 0 && this.grid[x][y] === person) compteur++;
+        while (--x >= 0 && this.grid[x][y] === person) compteur++;
 
-        if (compteur >= 4) while (++x < this.colonne && this.grid[x][y] === person) this.glow(x, y);
-
-        return compteur >= 4;
+        if (compteur < 4) return false;
+        else {
+            this.isGameStart = false;
+            let arrayPosition = [];
+            while (++x < this.colonne && this.grid[x][y] === person) arrayPosition.push([x, y]);
+            return arrayPosition;
+        }
     }
 
     getColumn(x, y) {
@@ -123,31 +136,54 @@ class ModelGrid {
 
         let yCol = y;
         while (++yCol < this.ligne && this.grid[x][yCol] === person) compteur++;
-        while (--y > 0 && this.grid[x][y] === person) compteur++;
+        while (--y >= 0 && this.grid[x][y] === person) compteur++;
 
-        if (compteur >= 4) while (++y < this.colonne && this.grid[x][y] === person) this.glow(x, y);
-
-        return compteur >= 4;
+        if (compteur < 4) return false;
+        else {
+            this.isGameStart = false;
+            let arrayPosition = [];
+            while (++y < this.colonne && this.grid[x][y] === person) arrayPosition.push([x, y]);
+            return arrayPosition;
+        }
     }
 
-    getDiag(x, y) {
+    getDiagRight(x, y) {
         let compteur = 1;
         let person = this.grid[x][y];
 
         let xDiag = x;
         let yDiag = y
+
         while (++xDiag < this.colonne && ++yDiag < this.ligne && this.grid[xDiag][yDiag] === person) compteur++;
+        while (--x >= 0 && --y > 0 && this.grid[x][y] === person) compteur++;
 
-        while (--x < this.colonne && --y < this.ligne && this.grid[x][y] === person) compteur++;
-
-        if (compteur >= 4) while (++x < this.colonne && ++y < this.ligne && this.grid[x][y] === person) this.glow(x, y);
-
-        return compteur >= 4;
+        if (compteur < 4) return false;
+        else {
+            this.isGameStart = false;
+            let arrayPosition = [];
+            while (++x < this.colonne && ++y < this.ligne && this.grid[x][y] === person) arrayPosition.push([x, y]);
+            return arrayPosition;
+        }
     }
 
-    glow(x, y){
-        ModelToken.draw(x, y, this.canvas, 'green');
-        document.getElementById("Winner").innerHTML = (this.tour%2===0)? 'Player B' : 'Player A';
-        document.getElementById("Win").style.display = 'block';
+    getDiagLeft(x, y) {
+        let compteur = 1;
+        let person = this.grid[x][y];
+
+        let xDiag = x;
+        let yDiag = y
+
+        while (++xDiag < this.colonne && --yDiag >= 0 && this.grid[xDiag][yDiag] === person) compteur++;
+        while (--x >= 0 && ++y < this.ligne && this.grid[x][y] === person) compteur++;
+
+        if (compteur < 4) return false;
+        else {
+            this.isGameStart = false;
+            let arrayPosition = [];
+            while (++x < this.colonne && --y >= 0 && this.grid[x][y] === person) arrayPosition.push([x, y]);
+            return arrayPosition;
+        }
     }
 }
+
+export default ModelGrid;

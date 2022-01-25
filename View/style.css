@@ -2,7 +2,7 @@
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 999; /* Sit on top */
     left: 0;
     top: 0;
     width: 100%; /* Full width */
@@ -38,8 +38,68 @@
 
 canvas{
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 #mainCanvas{
-    z-index: 999;
+    z-index: 998;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-height: 100vh;
+    margin: 0;
+    background-image: url("../16-166825_cage-mma.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#main{
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    height: 100%;
+    width: 30vw;
+    padding-top: 100px;
+}
+
+#Title{
+    height: 20vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lettersquare {
+    position: relative;
+    top: 10px;
+    width: 50px;
+    height: 70px;
+    font-size: 50px;
+    color: #ccf;
+    text-shadow: 0 0 2px #00f, 2px 1px 0 #00f;
+    animation-name: letterbox;
+    animation-duration: 1s;
+    animation-delay: 0.5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+@media (max-width: 780px) {
+    .lettersquare {
+        width: 40px;
+        height: 60px;
+        font-size: 40px;
+    }
+}
+@keyframes letterbox {
+    from {
+        top: 10px;
+    }
+    to {
+        top: 45px;
+    }
 }

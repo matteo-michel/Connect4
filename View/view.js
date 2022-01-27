@@ -28,22 +28,10 @@ class View {
             let rect = e.target.getBoundingClientRect();
             let x = e.clientX - rect.left;
 
-            if (!this.onGoingAnim) this.setToken(this.controller.getPosition(x));
+            if (!this.onGoingAnim) {
+                this.setToken(this.controller.getPosition(x));
+            }
         });
-
-        let hover;
-
-        // this.canvas.addEventListener('mouseover', (e) => {
-        //
-        //     hover = setInterval(() =>{
-        //         let rect = e.target.getBoundingClientRect();
-        //         let x = e.clientX - rect.left;
-        //         console.log(e.clientX);
-        //         console.log(this.controller.getPosition(x, true));
-        //         let t = this.controller.getPosition(x, true);
-        //         if (t !== undefined) this.drawToken(t[0], t[1], t[2], false, true);
-        //     }, 1)
-        // });
 
         this.canvas.addEventListener('mousemove', (e) => {
             let ctx = this.animCanvas.getContext('2d');
@@ -89,9 +77,17 @@ class View {
                 this.drawToken(x, line, color, false)
                 if (this.controller.checkWin(x, line)) this.displayModal();
                 this.onGoingAnim = false;
+                this.playAI();
             } else window.requestAnimationFrame(draw.bind(this));
         }
         window.requestAnimationFrame(draw.bind(this));
+    }
+
+    playAI(){
+        if (this.controller.isAITour()) {
+            this.setToken(this.controller.getAIPosition());
+            this.controller.addTour();
+        }
     }
 
     drawToken(x, y, color, isAnim, preview = false){
@@ -113,6 +109,7 @@ class View {
     setToken(arrayPositions){
         this.toggleRadio();
         this.onGoingAnim = true;
+        console.log(arrayPositions);
         this.animToken(arrayPositions[0], arrayPositions[1], arrayPositions[2], false);
     }
 
@@ -123,6 +120,11 @@ class View {
 
         document.getElementById('playerB').addEventListener('change', function() {
             if (!this.controller.isGameStart()) this.controller.changeStartPlayer();
+        }.bind(this));
+
+        document.getElementById('AI').addEventListener('click', function () {
+            console.log('click');
+            if (!this.controller.isGameStart()) this.controller.toggleAI();
         }.bind(this));
     }
 
@@ -135,11 +137,6 @@ class View {
         let gagnant = this.controller.getGagnant();
         document.getElementById('Winner').innerHTML = gagnant;
         document.querySelector('.modal').style.display = 'block';
-    }
-
-    hideModal(){
-        //Retry si le temps
-        document.querySelector('.modal').style.display = 'none';
     }
 }
 

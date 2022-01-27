@@ -17,6 +17,8 @@ class ModelGrid {
     canvas;
     animCanvas;
 
+    AI;
+
     isGameStart;
 
     constructor(length, height, token) {
@@ -32,6 +34,8 @@ class ModelGrid {
         this.ligne = height;
 
         this.isGameStart = false;
+
+        this.AI = false;
 
         this.grid = [];
         for (let i = 0; i < length; i++) {
@@ -52,6 +56,7 @@ class ModelGrid {
     }
 
     addTour(){
+        console.log(this.grid);
         this.tour++;
     }
 
@@ -60,8 +65,23 @@ class ModelGrid {
     }
 
     getGagnant(){
-        this.isIAPlay = false;
-        return ((this.tour-1)%2===0)? 'Player A' : (this.isIAPlay)? 'IA' : 'PLayer B';
+        return ((this.tour-1)%2===0)? 'Player A' : (this.AI)? 'IA' : 'PLayer B';
+    }
+
+    isAITour(){
+        return this.tour % 2 === 1 && this.AI;
+    }
+
+    toggleAI(){
+        this.AI = !this.AI;
+    }
+
+    setPosition(x, y){
+        this.grid[x][y] = 2;
+    }
+
+    getAI(){
+        return this.AI;
     }
 
     makeGrid() {

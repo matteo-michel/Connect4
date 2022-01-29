@@ -1,6 +1,3 @@
-import ModelToken from "./ModelToken.js";
-import controllerGrid from "../Controller/ControllerGrid.js";
-
 class ModelGrid {
 
     colorPlayerA;

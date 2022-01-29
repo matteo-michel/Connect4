@@ -1,14 +1,19 @@
 import ModelGrid from "../Model/ModelGrid.js";
 import ModelToken from "../Model/ModelToken.js";
+import ControllerAI from "./ControllerAI.js";
 
 class ControllerGrid{
 
     modelGrid;
     modelToken;
 
+    controllerAI;
+
     constructor(){
         this.modelToken = new ModelToken(40, 10);
         this.modelGrid = new ModelGrid(7, 6, this.modelToken);
+
+        this.controllerAI = new ControllerAI(this.modelGrid);
     }
 
     getCanvas(){
@@ -45,6 +50,26 @@ class ControllerGrid{
 
     getGagnant() {
         return this.modelGrid.getGagnant();
+    }
+
+    toggleAI(){
+        this.modelGrid.toggleAI();
+    }
+
+    isAITour(){
+        return this.modelGrid.isAITour();
+    }
+
+    getAIPosition(){
+        let p = this.controllerAI.getPosition();
+        this.modelGrid.setPosition(p[0], p[1]);
+
+        let color = this.modelGrid.getColorPlayer();
+        return [p[0], p[1], color];
+    }
+
+    addTour(){
+        this.modelGrid.addTour();
     }
 }
 

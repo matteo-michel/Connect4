@@ -22,19 +22,22 @@
 </div>
 <div id="main">
     <div id="menu">
-        <div class="activeIA">
-            <input type="checkbox" id="AI" name="AI">
-            <label for="AI">Active IA</label><br>
-        </div>
+        <label class="activeIA checkbox">
+            <input type="checkbox" class="checkbox__system-checkbox" id="AI" name="AI">
+            <span class="checkbox__custom-checkbox"></span>
+            <span class="checkbox__label">Active IA</span>
+        </label>
         <div class="playerChoice">
-            <div>
-                <input type="radio" id="playerA" name="player" checked>
-                <label for="playerA">Player A</label>
-            </div>
+            <div class="radio_container">
+                <div>
+                    <input type="radio" id="playerA" name="player" checked>
+                    <label for="playerA">Player A</label>
+                </div>
 
-            <div>
-                <input type="radio" id="playerB" name="player">
-                <label for="playerB">Player B</label>
+                <div>
+                    <input type="radio" id="playerB" name="player">
+                    <label for="playerB">Player B</label>
+                </div>
             </div>
         </div>
     </div>

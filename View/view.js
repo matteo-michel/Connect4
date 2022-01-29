@@ -77,7 +77,7 @@ class View {
                 this.drawToken(x, line, color, false)
                 if (this.controller.checkWin(x, line)) this.displayModal();
                 this.onGoingAnim = false;
-                this.playAI();
+                if (!this.controller.checkWin(x, line)) this.playAI();
             } else window.requestAnimationFrame(draw.bind(this));
         }
         window.requestAnimationFrame(draw.bind(this));
@@ -119,7 +119,10 @@ class View {
         }.bind(this));
 
         document.getElementById('playerB').addEventListener('change', function() {
-            if (!this.controller.isGameStart()) this.controller.changeStartPlayer();
+            if (!this.controller.isGameStart()) {
+                this.controller.changeStartPlayer();
+                this.playAI();
+            }
         }.bind(this));
 
         document.getElementById('AI').addEventListener('click', function () {

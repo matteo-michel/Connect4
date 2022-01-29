@@ -189,25 +189,24 @@ class ModelAI {
 
     minimax(x, y, grid, depth, alpha, beta, player) {
         console.log("minimax grid : ", grid);
-        grid[x][y] = player;
+        let grid_minimax = JSON.parse(JSON.stringify(grid));
 
-        if (depth === 0 || Math.abs(this.evaluation(grid, player) >= 1000)) {
-            return this.evaluation(grid, player);
+        grid_minimax[x][y] = player;
+
+        if (depth === 0 || this.evaluation(grid_minimax, player) >= 1000) {
+            return this.evaluation(grid_minimax, player);
         }
 
         if (player === 2) {
             let maxEval = -50000;
 
-            for (let child of this.getChilds(grid)) {
+            for (let child of this.getChilds(grid_minimax)) {
                 let x = child[0];
                 let y = child[1];
 
                 player = player % 2 + 1
-                let eva = this.minimax(x, y, grid, --depth, alpha, beta, player);
+                let eva = this.minimax(x, y, grid_minimax, --depth, alpha, beta, player);
                 maxEval = Math.max(maxEval, eva);
-                /*alpha = Math.max(alpha, eva)
-
-                if (beta <= alpha) break;*/
                 console.log("Max eval = ", maxEval);
                 return maxEval;
             }
@@ -216,21 +215,19 @@ class ModelAI {
         else {
             let minEval = 50000;
 
-            for (let child of this.getChilds(grid)) {
+            for (let child of this.getChilds(grid_minimax)) {
                 let x = child[0];
                 let y = child[1];
 
                 player = player % 2 + 1
-                let eva = this.minimax(x, y, grid, --depth, alpha, beta, player);
+                let eva = this.minimax(x, y, grid_minimax, --depth, alpha, beta, player);
                 minEval = Math.min(minEval, eva);
-                /*beta = Math.min(minEval, eva);
-
-                if (beta <= alpha) break;*/
                 console.log("min eval = ", minEval);
                 return minEval;
             }
         }
     }
+
     // getBestMove(board, depth, model) {
     //     let position; // Copy the board
     //     var maxEval = -Infinity; // The best evalution
@@ -244,6 +241,7 @@ class ModelAI {
     //
     //     for (let i = 0; i < 7; i++) {
     //         // For each possible move
+    //         position =
     //         var evalScore = this.minimax(
     //             model.getStateByMove(position, i, this.number),
     //             depth,
